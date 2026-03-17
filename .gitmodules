@@ -1,0 +1,3 @@
+[submodule "adblock/ubol"]
+	path = adblock/ubol
+	url = https://github.com/uBlockOrigin/uBOL-home

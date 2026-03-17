@@ -1,0 +1,135 @@
+html[data-calm-youtube-enabled="true"][data-calm-youtube-page] {
+  --calm-page-padding: 24px;
+}
+
+html[data-calm-youtube-enabled="true"] ytd-guide-entry-renderer a[href^="/shorts"],
+html[data-calm-youtube-enabled="true"] ytd-mini-guide-entry-renderer a[href^="/shorts"],
+html[data-calm-youtube-enabled="true"] ytd-rich-shelf-renderer[is-shorts],
+html[data-calm-youtube-enabled="true"] ytd-rich-section-renderer:has(ytd-reel-shelf-renderer),
+html[data-calm-youtube-enabled="true"] ytd-reel-shelf-renderer,
+html[data-calm-youtube-enabled="true"] ytd-reel-video-renderer,
+html[data-calm-youtube-enabled="true"] ytd-grid-video-renderer:has(a[href^="/shorts"]),
+html[data-calm-youtube-enabled="true"] ytd-rich-item-renderer:has(a[href^="/shorts"]),
+html[data-calm-youtube-enabled="true"] ytd-video-renderer:has(a[href^="/shorts"]),
+html[data-calm-youtube-enabled="true"] ytd-compact-video-renderer:has(a[href^="/shorts"]),
+html[data-calm-youtube-enabled="true"] ytd-rich-grid-row:has(a[href^="/shorts"]) {
+  display: none !important;
+}
+
+html[data-calm-youtube-enabled="true"] ytd-display-ad-renderer,
+html[data-calm-youtube-enabled="true"] ytd-ad-slot-renderer,
+html[data-calm-youtube-enabled="true"] ytd-promoted-video-renderer,
+html[data-calm-youtube-enabled="true"] ytd-promoted-sparkles-web-renderer,
+html[data-calm-youtube-enabled="true"] ytd-in-feed-ad-layout-renderer,
+html[data-calm-youtube-enabled="true"] ytd-engagement-panel-section-list-renderer[target-id*="advertiser"],
+html[data-calm-youtube-enabled="true"] #player-ads,
+html[data-calm-youtube-enabled="true"] .video-ads,
+html[data-calm-youtube-enabled="true"] #masthead-ad {
+  display: none !important;
+}
+
+html[data-calm-youtube-enabled="true"] ytd-rich-section-renderer:has(a[href*="/news"]),
+html[data-calm-youtube-enabled="true"] ytd-shelf-renderer:has(a[href*="/news"]) {
+  display: none !important;
+}
+
+html[data-calm-youtube-page="calm-watch"] #secondary,
+html[data-calm-youtube-page="calm-watch"] #related,
+html[data-calm-youtube-page="calm-watch"] ytd-watch-next-secondary-results-renderer,
+html[data-calm-youtube-page="calm-watch"] ytd-compact-video-renderer,
+html[data-calm-youtube-page="calm-watch"] .ytp-ce-element,
+html[data-calm-youtube-page="calm-watch"] .ytp-endscreen-content,
+html[data-calm-youtube-page="calm-watch"] ytd-rich-section-renderer {
+  display: none !important;
+}
+
+html[data-calm-youtube-page="calm-watch"] ytd-watch-flexy[flexy] #primary {
+  max-width: min(1000px, 100vw - 48px) !important;
+  margin: 0 auto !important;
+}
+
+html[data-calm-youtube-page="calm-watch"] ytd-watch-flexy[flexy] #columns {
+  justify-content: center !important;
+}
+
+html[data-calm-youtube-page="calm-home"] ytd-mini-guide-renderer,
+html[data-calm-youtube-page="calm-home"] tp-yt-app-drawer,
+html[data-calm-youtube-page="calm-home"] ytd-guide-renderer,
+html[data-calm-youtube-page="calm-home"] #guide,
+html[data-calm-youtube-page="calm-home"] ytd-feed-filter-chip-bar-renderer,
+html[data-calm-youtube-page="calm-home"] ytd-rich-section-renderer,
+html[data-calm-youtube-page="calm-home"] ytd-ad-slot-renderer,
+html[data-calm-youtube-page="calm-home"] ytd-promoted-sparkles-web-renderer,
+html[data-calm-youtube-page="calm-home"] ytd-in-feed-ad-layout-renderer,
+html[data-calm-youtube-page="calm-home"] ytd-merch-shelf-renderer,
+html[data-calm-youtube-page="calm-home"] ytd-banner-promo-renderer {
+  display: none !important;
+}
+
+html[data-calm-youtube-page="calm-home"] ytd-page-manager {
+  margin-left: 0 !important;
+}
+
+html[data-calm-youtube-page="calm-home"] ytd-two-column-browse-results-renderer[page-subtype="home"] {
+  max-width: 1120px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: 16px var(--calm-page-padding) 48px !important;
+  box-sizing: border-box !important;
+}
+
+html[data-calm-youtube-page="calm-home"] ytd-two-column-browse-results-renderer[page-subtype="home"] #primary {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+html[data-calm-youtube-page="calm-home"] ytd-rich-grid-renderer {
+  margin-top: 8px !important;
+}
+
+html[data-calm-youtube-page="calm-home"] #contents.ytd-rich-grid-renderer {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 320px)) !important;
+  justify-content: center !important;
+  gap: 20px !important;
+}
+
+html[data-calm-youtube-page="calm-home"] ytd-rich-item-renderer {
+  width: 320px !important;
+  max-width: 320px !important;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+html[data-calm-youtube-page="calm-home"] ytd-rich-item-renderer #dismissible {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 18px;
+}
+
+html[data-calm-youtube-page="calm-home"] ytd-rich-grid-row,
+html[data-calm-youtube-page="calm-home"] ytd-rich-grid-row #contents,
+html[data-calm-youtube-page="calm-home"] ytd-rich-grid-row-renderer {
+  display: contents !important;
+}
+
+@media (max-width: 900px) {
+  html[data-calm-youtube-page="calm-home"] #contents.ytd-rich-grid-renderer {
+    grid-template-columns: repeat(2, minmax(0, 320px)) !important;
+  }
+}
+
+@media (max-width: 720px) {
+  html[data-calm-youtube-page="calm-home"] {
+    --calm-page-padding: 16px;
+  }
+
+  html[data-calm-youtube-page="calm-home"] #contents.ytd-rich-grid-renderer {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  html[data-calm-youtube-page="calm-home"] ytd-rich-item-renderer {
+    width: min(100%, 320px) !important;
+    max-width: min(100%, 320px) !important;
+    margin: 0 auto !important;
+  }
+}

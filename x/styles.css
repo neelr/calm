@@ -1,0 +1,35 @@
+html[data-calm-x-enabled="true"] [data-testid="sidebarColumn"],
+html[data-calm-x-enabled="true"] [aria-label="Timeline: Trending now"],
+html[data-calm-x-enabled="true"] [aria-label="Timeline: Explore"],
+html[data-calm-x-enabled="true"] [data-testid="trend"],
+html[data-calm-x-enabled="true"] [data-testid="WhoToFollow"] {
+  display: none !important;
+}
+
+html[data-calm-x-enabled="true"] #react-root main {
+  flex-grow: 1 !important;
+}
+
+@media (min-width: 800px) {
+  html[data-calm-x-enabled="true"] [role="listbox"] {
+    max-width: 500px !important;
+  }
+}
+
+html[data-calm-x-enabled="true"] article[data-testid="tweet"][data-calm-twitter-video="hidden"] .calm-twitter-media-region {
+  display: none !important;
+}
+
+html[data-calm-x-enabled="true"] .calm-twitter-video-toggle {
+  display: inline-block;
+  margin: 12px 0;
+  color: rgb(29, 155, 240);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+html[data-calm-x-enabled="true"] .calm-twitter-video-toggle:hover {
+  text-decoration: underline;
+}
