@@ -168,7 +168,7 @@
       }
 
       const key = event.key.toLowerCase();
-      if (key !== "a" && key !== "s" && key !== "d") {
+      if (key !== "a" && key !== "s" && key !== "d" && key !== "z" && key !== "x") {
         return;
       }
 
@@ -179,6 +179,16 @@
 
       event.preventDefault();
       event.stopPropagation();
+
+      if (key === "z") {
+        video.currentTime = Math.max(0, video.currentTime - 5);
+        return;
+      }
+
+      if (key === "x") {
+        video.currentTime = Math.min(video.duration, video.currentTime + 5);
+        return;
+      }
 
       if (key === "a") {
         toggleSpeed(video);
