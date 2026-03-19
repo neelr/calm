@@ -310,7 +310,6 @@
   "name": "Calm Feed",
   "options_page": "adblock/runtime/dashboard.html",
   "permissions": [
-    "activeTab",
     "declarativeNetRequest",
     "scripting",
     "storage",

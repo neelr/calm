@@ -44,9 +44,11 @@ jq '
   .short_name = "Calm Feed" |
   .options_page = "adblock/runtime/dashboard.html" |
   .permissions |= (
-    if index("tabs") then .
-    else . + ["tabs"]
-    end
+    (
+      if index("tabs") then .
+      else . + ["tabs"]
+      end
+    ) | map(select(. != "activeTab"))
   ) |
   .storage.managed_schema = "adblock/runtime/managed_storage.json" |
   .version = "1.0.0" |
