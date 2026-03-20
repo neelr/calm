@@ -146,10 +146,30 @@
     });
   }
 
+  function hideTodaysNews() {
+    document.querySelectorAll('[data-testid="cellInnerDiv"]').forEach((cell) => {
+      const link = cell.querySelector('a[href="/explore"]');
+      if (!link) {
+        return;
+      }
+
+      const heading = cell.querySelector("h2");
+      if (heading && heading.textContent.trim().includes("Today's News")) {
+        cell.style.display = "none";
+        return;
+      }
+
+      if (!heading && link.textContent.trim() === "Show more") {
+        cell.style.display = "none";
+      }
+    });
+  }
+
   function cleanupX() {
     document.documentElement.dataset.calmTwitterPage = "timeline";
     debugLog("cleanupX start");
     hidePromotedContent();
+    hideTodaysNews();
     attachVideoToggles();
     debugLog("cleanupX end");
   }
