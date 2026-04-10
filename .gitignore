@@ -1,2 +1,5 @@
 _metadata/
 .DS_Store
+
+# Local Curius JWT for curl / debugging (never commit)
+curius/.curius-token

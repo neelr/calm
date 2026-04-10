@@ -3,15 +3,93 @@ body {
   font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: #fff;
   color: #111;
+  min-width: 280px;
+  min-height: 120px;
+}
+
+.curius-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  padding: 12px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.curius-modal[hidden] {
+  display: none !important;
+}
+
+.curius-modal:not([hidden]) {
+  display: flex;
+}
+
+.curius-modal-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.curius-modal-hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #444;
+}
+
+.curius-modal textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font:
+    11px/1.3 ui-monospace,
+    monospace;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.curius-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.curius-modal-actions button {
+  font: inherit;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f6f8fa;
+  cursor: pointer;
+}
+
+.curius-modal-actions button.curius-modal-primary {
+  background: #0969da;
+  border-color: #0969da;
+  color: #fff;
 }
 
 .popup {
-  width: 240px;
-  padding: 14px;
+  width: 288px;
+  padding: 12px 14px 16px;
+  box-sizing: border-box;
+}
+
+.popup-header {
+  margin-bottom: 10px;
 }
 
 h1 {
-  margin: 0 0 12px;
+  margin: 0;
   font-size: 16px;
   text-align: center;
 }
@@ -32,8 +110,117 @@ h1 {
   text-align: center;
 }
 
+/* Curius: same checkbox row as other toggles, with icon buttons on the right */
+.curius-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.curius-line .toggle {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.curius-toolbar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 5px;
+}
+
+.curius-icon-btn {
+  box-sizing: border-box;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.96);
+  color: #333;
+  cursor: pointer;
+  flex-shrink: 0;
+  overflow: visible;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 3px 8px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow 0.1s ease,
+    background 0.1s ease;
+}
+
+.curius-icon-btn .curius-icon {
+  overflow: visible;
+}
+
+.curius-icon-btn:focus,
+.curius-icon-btn:focus-visible {
+  outline: none;
+}
+
+.curius-icon-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 3px 6px rgba(0, 0, 0, 0.12),
+    0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.curius-icon-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.curius-icon-btn--save {
+  border-color: rgba(46, 160, 67, 0.45);
+  background: rgba(46, 160, 67, 0.1);
+  color: #1a7f37;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 2px 4px rgba(46, 160, 67, 0.12),
+    0 3px 8px rgba(0, 0, 0, 0.06);
+}
+
+.curius-icon-btn--save:hover:not(:disabled) {
+  background: rgba(46, 160, 67, 0.2);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35) inset,
+    0 3px 6px rgba(46, 160, 67, 0.2),
+    0 5px 12px rgba(0, 0, 0, 0.08);
+}
+
+.curius-icon-btn--unsave {
+  border-color: rgba(200, 60, 60, 0.4);
+  background: rgba(255, 255, 255, 0.96);
+  color: #a30f0f;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 3px 8px rgba(0, 0, 0, 0.06);
+}
+
+.curius-icon-btn--unsave:hover:not(:disabled) {
+  background: rgba(200, 60, 60, 0.07);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 3px 6px rgba(0, 0, 0, 0.12),
+    0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.curius-icon {
+  display: block;
+  pointer-events: none;
+}
+
 .hint {
   margin: 12px 0 0;
   color: #666;
-  font-size: 12px;
+  font-size: 11px;
+  line-height: 1.35;
 }

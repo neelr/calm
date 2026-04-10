@@ -310,6 +310,8 @@
   "name": "Calm Feed",
   "options_page": "adblock/runtime/dashboard.html",
   "permissions": [
+    "clipboardWrite",
+    "cookies",
     "declarativeNetRequest",
     "scripting",
     "storage",
@@ -451,6 +453,39 @@
         "x/styles.css"
       ],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "exclude_matches": [
+        "http://localhost/*",
+        "https://localhost/*",
+        "https://www.messenger.com/*",
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://calendar.google.com/*"
+      ],
+      "js": [
+        "curius/content.js"
+      ],
+      "css": [
+        "curius/content.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://curius.app/*",
+        "https://www.curius.app/*"
+      ],
+      "js": [
+        "curius/site-export.js"
+      ],
+      "css": [
+        "curius/site-export.css"
+      ],
+      "run_at": "document_idle"
     }
   ]
 }

@@ -21,6 +21,8 @@
 
 import * as scrmgr from './scripting-manager.js';
 
+import '../../../curius/calm-bridge.js';
+
 import {
     MODE_BASIC,
     MODE_OPTIMAL,
@@ -220,6 +222,9 @@ function setDeveloperMode(state) {
 /******************************************************************************/
 
 function onMessage(request, sender, callback) {
+
+    // Calm Feed: Curius bridge handles these via a separate listener (see curius/calm-bridge.js).
+    if ( request?.scope === 'curius' ) { return true; }
 
     const tabId = sender?.tab?.id ?? false;
     const frameId = tabId && (sender?.frameId ?? false);

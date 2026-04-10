@@ -7,8 +7,30 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
+  <div id="curiusTokenModal" class="curius-modal" hidden>
+    <p class="curius-modal-title">Paste Curius session</p>
+    <p class="curius-modal-hint">
+      Log in on <strong>curius.app</strong>, then copy the JSON from the
+      <strong>bottom-left</strong> Calm Feed box on that site and paste it here.
+    </p>
+    <textarea
+      id="curiusTokenInput"
+      rows="8"
+      spellcheck="false"
+      placeholder='[{"name":"...","value":"...", ...}]'
+    ></textarea>
+    <div class="curius-modal-actions">
+      <button type="button" id="curiusTokenApply" class="curius-modal-primary">
+        Apply
+      </button>
+      <button type="button" id="curiusTokenCancel">Cancel</button>
+      <button type="button" id="curiusOpenSite">Open curius.app</button>
+    </div>
+  </div>
   <main class="popup">
-    <h1>Calm Feed</h1>
+    <div class="popup-header">
+      <h1>Calm Feed</h1>
+    </div>
     <label class="toggle">
       <input id="youtubeEnabled" type="checkbox">
       <span>YouTube cleanup</span>
@@ -25,6 +47,20 @@
       <input id="videospeedEnabled" type="checkbox">
       <span>Video speed</span>
     </label>
+    <div class="curius-line">
+      <label class="toggle">
+        <input id="curiusEnabled" type="checkbox">
+        <span>Curius</span>
+      </label>
+      <div class="curius-toolbar" role="toolbar" aria-label="Curius">
+        <button type="button" id="curiusAuth" class="curius-icon-btn curius-icon-btn--auth" aria-label="Log in to Curius" title="Log in to Curius">
+          <svg class="curius-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 7L9.41 8.59 11 10.17H1v2h10.17l-1.59 1.59L11 15l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+        </button>
+        <button type="button" id="curiusSaveToggle" class="curius-icon-btn curius-icon-btn--save" title="Save this tab to Curius" aria-label="Save page to Curius">
+          <svg class="curius-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+        </button>
+      </div>
+    </div>
   </main>
   <script src="popup.js"></script>
 </body>

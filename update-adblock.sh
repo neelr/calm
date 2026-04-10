@@ -50,6 +50,9 @@ jq '
       end
     ) | map(select(. != "activeTab"))
   ) |
+  .permissions |= (
+    if index("cookies") then . else . + ["cookies"] end
+  ) |
   .storage.managed_schema = "adblock/runtime/managed_storage.json" |
   .version = "1.0.0" |
   .web_accessible_resources |= map(
@@ -92,6 +95,29 @@ jq '
       "js": ["x/inject.js", "x/content.js"],
       "css": ["x/styles.css"],
       "run_at": "document_start"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "exclude_matches": [
+        "http://localhost/*",
+        "https://localhost/*",
+        "https://www.messenger.com/*",
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://calendar.google.com/*"
+      ],
+      "js": ["curius/content.js"],
+      "css": ["curius/content.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://curius.app/*",
+        "https://www.curius.app/*"
+      ],
+      "js": ["curius/site-export.js"],
+      "css": ["curius/site-export.css"],
+      "run_at": "document_idle"
     }
   ]
 ' "$CHROMIUM_DIR/manifest.json" > "$ROOT_DIR/manifest.json"
@@ -101,6 +127,15 @@ jq empty "$ROOT_DIR/manifest.json"
 find "$RUNTIME_DIR" -type f \( -name '*.html' -o -name '*.js' \) -print0 | while IFS= read -r -d '' file; do
   perl -0pi -e 's#/css/#/adblock/runtime/css/#g; s#/js/#/adblock/runtime/js/#g; s#/img/#/adblock/runtime/img/#g; s#/rulesets/#/adblock/runtime/rulesets/#g; s#/web_accessible_resources/#/adblock/runtime/web_accessible_resources/#g; s#/strictblock\.html#/adblock/runtime/strictblock.html#g; s#/picker-ui\.html#/adblock/runtime/picker-ui.html#g; s#/unpicker-ui\.html#/adblock/runtime/unpicker-ui.html#g; s#/zapper-ui\.html#/adblock/runtime/zapper-ui.html#g; s#/report\.html#/adblock/runtime/report.html#g; s#runtime\.getURL\('/'\)#runtime.getURL('/adblock/runtime/')#g' "$file"
 done
+
+# Calm Feed — Curius: load bridge in the service worker and avoid uBOL responding to curius messages.
+BG_JS="$RUNTIME_DIR/js/background.js"
+if ! grep -q "curius/calm-bridge.js" "$BG_JS"; then
+  perl -0pi -e "s|(import \* as scrmgr from '\\./scripting-manager\\.js';\\n)|\$1\\nimport '../../../curius/calm-bridge.js';\\n|" "$BG_JS"
+fi
+if ! grep -q "request?.scope === 'curius'" "$BG_JS"; then
+  perl -0pi -e "s|(function onMessage\\(request, sender, callback\\) \\{\\n)(\\n    const tabId)|\$1\\n    if ( request?.scope === 'curius' ) { return true; }\\n\$2|" "$BG_JS"
+fi
 
 for ruleset in \
   ublock-filters.json \
