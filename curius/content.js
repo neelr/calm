@@ -922,6 +922,33 @@
       target.scrollIntoView({ block: "center", behavior: "smooth" });
       window.setTimeout(() => pulseHighlightNav(mark), 240);
     });
+    // Make card draggable
+    let dragStartX, dragStartY, cardStartX, cardStartY;
+    card.addEventListener("mousedown", (e) => {
+      if (e.target.closest("button, a, input, textarea, .calm-curius-margin-comment-text")) return;
+      e.preventDefault();
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      const rect = card.getBoundingClientRect();
+      cardStartX = rect.left;
+      cardStartY = rect.top + window.scrollY;
+      card.dataset.dragged = "1";
+      card.style.cursor = "grabbing";
+      function onMove(ev) {
+        const dx = ev.clientX - dragStartX;
+        const dy = ev.clientY - dragStartY;
+        card.style.top = `${cardStartY + dy}px`;
+        card.style.right = "auto";
+        card.style.left = `${cardStartX + dx}px`;
+      }
+      function onUp() {
+        card.style.cursor = "";
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      }
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
     document.documentElement.appendChild(card);
     marginComments.push({ el: card, key, outerEl });
     layoutMarginComments();
@@ -931,18 +958,28 @@
   function layoutMarginComments() {
     const GAP = 6;
     let nextAvailableTop = 0;
-    const entries = marginComments
-      .filter((mc) => mc.el.isConnected && mc.outerEl && mc.outerEl.isConnected)
-      .map((mc) => {
+    // Split into anchored (has outerEl) and orphaned (no outerEl)
+    const anchored = [];
+    const orphaned = [];
+    for (const mc of marginComments) {
+      if (!mc.el.isConnected || mc.el.dataset.dragged) continue;
+      if (mc.outerEl && mc.outerEl.isConnected) {
         const rect = mc.outerEl.getBoundingClientRect();
-        const docTop = rect.top + window.scrollY;
-        return { ...mc, docTop };
-      })
-      .sort((a, b) => a.docTop - b.docTop);
-    for (const entry of entries) {
+        anchored.push({ ...mc, docTop: rect.top + window.scrollY });
+      } else {
+        orphaned.push(mc);
+      }
+    }
+    anchored.sort((a, b) => a.docTop - b.docTop);
+    for (const entry of anchored) {
       let top = Math.max(entry.docTop, nextAvailableTop);
       entry.el.style.top = `${Math.round(top)}px`;
       nextAvailableTop = top + entry.el.offsetHeight + GAP;
+    }
+    // Place orphaned comments after the last anchored one
+    for (const mc of orphaned) {
+      mc.el.style.top = `${Math.round(nextAvailableTop)}px`;
+      nextAvailableTop += mc.el.offsetHeight + GAP;
     }
   }
 
@@ -1587,11 +1624,35 @@
 
   function applyServerHighlights(highlights) {
     clearServerMarks();
+    const orphanedComments = [];
     for (const h of highlights) {
       if (!highlightText(h)) {
         continue;
       }
-      wrapHighlightWithContext(h);
+      const placed = wrapHighlightWithContext(h);
+      if (!placed && highlightCommentText(h)) {
+        orphanedComments.push(h);
+      }
+    }
+    // Create margin comments for highlights whose text couldn't be matched on the page
+    for (const h of orphanedComments) {
+      const uo = highlightUserObject(h);
+      const displayName = highlightUser(h);
+      const personKey =
+        (uo && personKeyFromUser(uo)) ||
+        displayName ||
+        String(highlightId(h) || "");
+      const v = visualsForHighlight(h);
+      const key = makeHlPairKey({ id: highlightId(h) });
+      const attrs = {
+        id: highlightId(h),
+        comment: highlightCommentText(h),
+        displayName,
+        markBorder: v.markBorder,
+        personKey,
+      };
+      // No outerEl — card will be placed at bottom of existing comments
+      createMarginComment(key, attrs, v.markBorder, null);
     }
     scheduleLayoutMarginComments();
     requestAnimationFrame(() => {

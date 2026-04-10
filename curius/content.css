@@ -282,7 +282,7 @@
 .calm-curius-margin-comment {
   position: absolute;
   z-index: 2147483640;
-  right: 8px;
+  right: 30px;
   width: 220px;
   max-width: 28vw;
   box-sizing: border-box;
@@ -297,7 +297,10 @@
   font: 12px/1.4 var(--calm-curius-font);
   color: #1a1a1a;
   pointer-events: auto;
-  cursor: pointer;
+  cursor: grab;
+  text-transform: none;
+  text-decoration: none;
+  font-style: normal;
   transition: box-shadow 0.15s ease, opacity 0.15s ease;
   opacity: 0.88;
 }
@@ -382,6 +385,7 @@
   letter-spacing: 0.02em;
   color: #5c5c5c;
   margin-bottom: 3px;
+  text-transform: none;
 }
 
 .calm-curius-margin-comment-text {
@@ -390,6 +394,7 @@
   white-space: pre-wrap;
   overflow-wrap: break-word;
   word-break: normal;
+  text-transform: none;
 }
 
 /* On narrow screens, make cards smaller and closer */
