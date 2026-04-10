@@ -364,9 +364,11 @@
     const hue = hashStringToHue(nameKey || "unknown");
     return {
       hue,
-      avatarBg: `hsl(${hue}, 58%, 46%)`,
-      markBg: `hsla(${hue}, 72%, 88%, 0.92)`,
-      markBorder: `hsla(${hue}, 58%, 42%, 0.88)`,
+      /* Softer than original disks; light enough for white initials (not 82% L). */
+      avatarBg: `hsl(${hue}, 38%, 58%)`,
+      /* First “pastel” pass for highlights on the page */
+      markBg: `hsla(${hue}, 42%, 92%, 0.93)`,
+      markBorder: `hsla(${hue}, 36%, 70%, 0.5)`,
     };
   }
 
@@ -2054,7 +2056,8 @@
       const span = document.createElement("span");
       span.className = "calm-curius-avatar";
       span.dataset.personKey = key;
-      span.style.background = v.avatarBg;
+      span.style.setProperty("background", v.avatarBg, "important");
+      span.style.setProperty("color", "rgba(255,255,255,0.96)", "important");
       span.dataset.name = name;
       span.setAttribute("role", "button");
       span.setAttribute("tabindex", "0");

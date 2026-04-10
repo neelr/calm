@@ -3,4 +3,6 @@ _metadata/
 
 # Local Curius JWT for curl / debugging (never commit)
 curius/.curius-token
-_locales
+
+_locales/
+locales/

@@ -106,11 +106,12 @@
   height: 26px;
   border-radius: 50%;
   font: 700 12px/1.15 var(--calm-curius-font);
-  color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.18);
+  color: #fff !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.25) inset,
-    0 2px 4px rgba(0, 0, 0, 0.2);
+    0 1px 0 rgba(255, 255, 255, 0.28) inset,
+    0 2px 4px rgba(0, 0, 0, 0.14);
   cursor: pointer;
   user-select: none;
   overflow: visible;
