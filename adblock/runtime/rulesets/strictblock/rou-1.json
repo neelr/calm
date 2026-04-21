@@ -29,14 +29,17 @@
    "aplizz.net",
    "awstaticdn.net",
    "banners.livepartners.com",
+   "beesratyou.com",
    "blaneo.com",
    "brand.ad",
    "brat-online.ro",
    "chargeplatform.com",
+   "colorfulculture.click",
    "contestapp.a1.ro",
    "creativcdn.net",
    "crwdcntrl.net",
    "cumult.com",
+   "deltarockme.com",
    "flx1.com",
    "gazeta-romaneasca.ro",
    "get-in-shape.beauty",
@@ -48,6 +51,7 @@
    "jurnalul-militar.ro",
    "klodrum.com",
    "kreativcdn.net",
+   "l.profitshare.ro",
    "listat.biz",
    "megapopads.com",
    "minecrunch.co",
@@ -103,7 +107,7 @@
   "type": "redirect"
  },
  "condition": {
-  "regexFilter": "^[a-z-]+://(?:[^/?#]+\\.)?femeisingure\\.net(?:[^%.0-9a-z_-]|$).*",
+  "regexFilter": "^[^:]+:\\/\\/([^:/]+\\.)?femeisingure\\.net[^%.0-9a-z_-]?.*",
   "resourceTypes": [
    "main_frame"
   ]
@@ -119,7 +123,7 @@
   "type": "redirect"
  },
  "condition": {
-  "regexFilter": "^[a-z-]+://(?:[^/?#]+\\.)?easyaff\\.net/\\?ref.*",
+  "regexFilter": "^[^:]+:\\/\\/([^:/]+\\.)?easyaff\\.net\\/\\?ref.*",
   "resourceTypes": [
    "main_frame"
   ]
@@ -135,7 +139,7 @@
   "type": "redirect"
  },
  "condition": {
-  "regexFilter": "^.*/click\\?impid=.*",
+  "regexFilter": "^.*\\/click\\?impid=.*",
   "resourceTypes": [
    "main_frame"
   ]

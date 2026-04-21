@@ -1,7 +1,7 @@
 /*******************************************************************************
 
-    uBlock Origin Lite - a comprehensive, MV3-compliant content blocker
-    Copyright (C) 2014-present Raymond Hill
+    uBlock Origin - a comprehensive, efficient content blocker
+    Copyright (C) 2019-present Raymond Hill
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,21 +17,24 @@
     along with this program.  If not, see {http://www.gnu.org/licenses/}.
 
     Home: https://github.com/gorhill/uBlock
+
 */
 
-// Important!
-// Isolate from global scope
-(function uBOL_cssProceduralImport() {
+// Code imported from main code base and exposed as injectable scriptlets
+import { ArglistParser as __ArglistParser__ } from '../arglist-parser.js';
+import { JSONPath as __JSONPath__ } from '../jsonpath.js';
+import { registerScriptlet } from './base.js';
 
 /******************************************************************************/
 
-const rulesetId = "ublock-experimental";
+export const ArglistParser = __ArglistParser__;
 
-self.proceduralImports = self.proceduralImports || [];
-self.proceduralImports.push(rulesetId);
+registerScriptlet(ArglistParser, {
+    name: 'arglist-parser.fn',
+});
 
-/******************************************************************************/
+export const JSONPath = __JSONPath__;
 
-})();
-
-/******************************************************************************/
+registerScriptlet(JSONPath, {
+    name: 'jsonpath.fn',
+});

@@ -310,12 +310,13 @@
   "name": "Calm Feed",
   "options_page": "adblock/runtime/dashboard.html",
   "permissions": [
-    "clipboardWrite",
-    "cookies",
     "declarativeNetRequest",
+    "offscreen",
     "scripting",
     "storage",
-    "tabs"
+    "userScripts",
+    "tabs",
+    "cookies"
   ],
   "short_name": "Calm Feed",
   "storage": {

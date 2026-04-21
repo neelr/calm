@@ -84,6 +84,7 @@ import {
     getEffectiveDynamicRules,
     getEffectiveSessionRules,
     getEffectiveUserRules,
+    getEnabledRulesetsDetails,
     getRulesetDetails,
     patchDefaultRulesets,
     setStrictBlockMode,
@@ -223,7 +224,6 @@ function setDeveloperMode(state) {
 
 function onMessage(request, sender, callback) {
 
-    // Calm Feed: Curius bridge handles these via a separate listener (see curius/calm-bridge.js).
     if ( request?.scope === 'curius' ) { return true; }
 
     const tabId = sender?.tab?.id ?? false;
@@ -390,6 +390,12 @@ function onMessage(request, sender, callback) {
     case 'getRulesetDetails':
         getRulesetDetails().then(rulesetDetails => {
             callback(Array.from(rulesetDetails.values()));
+        });
+        return true;
+
+    case 'getEnabledRulesetsDetails':
+        getEnabledRulesetsDetails().then(rulesetDetails => {
+            callback(rulesetDetails);
         });
         return true;
 
