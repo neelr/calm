@@ -300,7 +300,7 @@
     ]
   },
   "default_locale": "en",
-  "description": "Clean up YouTube and Twitter/X and add a uBOL-based MV3 adblock core.",
+  "description": "Clean up YouTube and Twitter/X, add Spotify playback speed, and include a uBOL-based MV3 adblock core.",
   "host_permissions": [
     "<all_urls>"
   ],
@@ -415,6 +415,14 @@
         "https://x.com/*",
         "https://www.x.com/*"
       ]
+    },
+    {
+      "resources": [
+        "spotifyplayback/page-script.js"
+      ],
+      "matches": [
+        "https://open.spotify.com/*"
+      ]
     }
   ],
   "content_scripts": [
@@ -424,6 +432,15 @@
       ],
       "js": [
         "videospeed/content.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://open.spotify.com/*"
+      ],
+      "js": [
+        "spotifyplayback/content.js"
       ],
       "run_at": "document_start"
     },

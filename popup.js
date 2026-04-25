@@ -16,6 +16,7 @@ async function getSettings() {
     youtubeEnabled: true,
     xEnabled: true,
     videospeedEnabled: true,
+    spotifyPlaybackEnabled: true,
     curiusEnabled: false
   });
 
@@ -232,6 +233,7 @@ async function init() {
   const xEnabled = document.getElementById("xEnabled");
   const adblockEnabled = document.getElementById("adblockEnabled");
   const videospeedEnabled = document.getElementById("videospeedEnabled");
+  const spotifyPlaybackEnabled = document.getElementById("spotifyPlaybackEnabled");
   const curiusEnabled = document.getElementById("curiusEnabled");
   const curiusAuth = document.getElementById("curiusAuth");
 
@@ -239,6 +241,7 @@ async function init() {
   xEnabled.checked = settings.xEnabled;
   adblockEnabled.checked = settings.adblockEnabled;
   videospeedEnabled.checked = settings.videospeedEnabled;
+  spotifyPlaybackEnabled.checked = settings.spotifyPlaybackEnabled;
   curiusEnabled.checked = settings.curiusEnabled;
   function syncCuriusToolbar() {
     if (!curiusEnabled.checked) {
@@ -346,6 +349,11 @@ async function init() {
 
   videospeedEnabled.addEventListener("change", async () => {
     await chrome.storage.local.set({ videospeedEnabled: videospeedEnabled.checked });
+    await reloadActiveTab();
+  });
+
+  spotifyPlaybackEnabled.addEventListener("change", async () => {
+    await chrome.storage.local.set({ spotifyPlaybackEnabled: spotifyPlaybackEnabled.checked });
     await reloadActiveTab();
   });
 
