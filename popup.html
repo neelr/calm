@@ -51,6 +51,20 @@
       <input id="spotifyPlaybackEnabled" type="checkbox">
       <span>Spotify playback</span>
     </label>
+    <label class="toggle">
+      <input id="mangadexTranslateEnabled" type="checkbox">
+      <span>MangaDex translate</span>
+    </label>
+    <div class="mangadex-settings" aria-label="MangaDex translation settings">
+      <label>
+        <span>Language</span>
+        <input id="mangadexTargetLanguage" type="text" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="mangadex-context-label">
+        <span>Context</span>
+        <textarea id="mangadexPromptContext" rows="5" spellcheck="false"></textarea>
+      </label>
+    </div>
     <div class="curius-line">
       <label class="toggle">
         <input id="curiusEnabled" type="checkbox">

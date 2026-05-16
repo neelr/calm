@@ -4,5 +4,9 @@ _metadata/
 # Local Curius JWT for curl / debugging (never commit)
 curius/.curius-token
 
+# Local OpenAI key for MangaDex translation (never commit)
+mangadex/local-config.json
+mangadex/nippon-sangoku-context.html
+
 _locales/
 locales/

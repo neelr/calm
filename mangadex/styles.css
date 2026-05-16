@@ -1,0 +1,126 @@
+.calm-md-status {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2147483647;
+  padding: 6px 9px;
+  border-radius: 7px;
+  background: rgba(20, 20, 20, 0.82);
+  color: #fff;
+  font: 12px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+}
+
+.calm-md-status[data-level="error"] {
+  background: rgba(153, 27, 27, 0.9);
+}
+
+.calm-md-pdf-button {
+  position: fixed;
+  right: 14px;
+  bottom: 48px;
+  z-index: 2147483647;
+  min-width: 96px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 7px;
+  background: rgba(20, 20, 20, 0.86);
+  color: #fff;
+  font: 700 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+}
+
+.calm-md-pdf-button:hover:not(:disabled) {
+  background: rgba(45, 45, 45, 0.92);
+}
+
+.calm-md-pdf-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.calm-md-progress {
+  position: fixed;
+  right: 14px;
+  bottom: 84px;
+  z-index: 2147483647;
+  width: 180px;
+  height: 24px;
+  overflow: hidden;
+  border-radius: 7px;
+  background: rgba(20, 20, 20, 0.82);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+}
+
+.calm-md-progress[hidden] {
+  display: none !important;
+}
+
+.calm-md-progress-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  background: rgba(46, 160, 67, 0.86);
+  transition: width 0.18s ease;
+}
+
+.calm-md-progress-text {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  font: 700 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-align: center;
+}
+
+.calm-md-overlay {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.calm-md-box {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 5px;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #080808;
+  font-family:
+    "Anime Ace 2.0 BB",
+    "Anime Ace",
+    "CC Wild Words",
+    "Comic Sans MS",
+    "Trebuchet MS",
+    sans-serif;
+  font-weight: 700;
+  line-height: 0.98;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+  overflow: hidden;
+  letter-spacing: 0;
+  text-transform: none;
+  -webkit-text-stroke: 0.01em rgba(0, 0, 0, 0.3);
+  text-shadow:
+    0 1px rgba(255, 255, 255, 0.9),
+    1px 0 rgba(255, 255, 255, 0.65),
+    -1px 0 rgba(255, 255, 255, 0.65);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}

@@ -22,6 +22,7 @@
 import * as scrmgr from './scripting-manager.js';
 
 import '../../../curius/calm-bridge.js';
+import '../../../mangadex/background.js';
 
 import {
     MODE_BASIC,
@@ -225,6 +226,27 @@ function setDeveloperMode(state) {
 function onMessage(request, sender, callback) {
 
     if ( request?.scope === 'curius' ) { return true; }
+    if ( request?.scope === 'calm-mangadex' ) { return true; }
+
+    if ( request?.scope === 'calm-spotifyplayback' ) {
+        if ( request.type !== 'getTabAudioStreamId' ) { return false; }
+
+        const targetTabId = sender?.tab?.id;
+        if ( typeof targetTabId !== 'number' ) {
+            callback({ ok: false, error: 'missing sender tab' });
+            return true;
+        }
+
+        chrome.tabCapture.getMediaStreamId({ targetTabId }, streamId => {
+            const error = chrome.runtime.lastError;
+            if ( error ) {
+                callback({ ok: false, error: error.message });
+                return;
+            }
+            callback({ ok: true, streamId });
+        });
+        return true;
+    }
 
     const tabId = sender?.tab?.id ?? false;
     const frameId = tabId && (sender?.frameId ?? false);

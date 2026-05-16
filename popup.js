@@ -17,6 +17,9 @@ async function getSettings() {
     xEnabled: true,
     videospeedEnabled: true,
     spotifyPlaybackEnabled: true,
+    mangadexTranslateEnabled: false,
+    mangadexTargetLanguage: "English",
+    mangadexPromptContext: "",
     curiusEnabled: false
   });
 
@@ -234,6 +237,9 @@ async function init() {
   const adblockEnabled = document.getElementById("adblockEnabled");
   const videospeedEnabled = document.getElementById("videospeedEnabled");
   const spotifyPlaybackEnabled = document.getElementById("spotifyPlaybackEnabled");
+  const mangadexTranslateEnabled = document.getElementById("mangadexTranslateEnabled");
+  const mangadexTargetLanguage = document.getElementById("mangadexTargetLanguage");
+  const mangadexPromptContext = document.getElementById("mangadexPromptContext");
   const curiusEnabled = document.getElementById("curiusEnabled");
   const curiusAuth = document.getElementById("curiusAuth");
 
@@ -242,6 +248,9 @@ async function init() {
   adblockEnabled.checked = settings.adblockEnabled;
   videospeedEnabled.checked = settings.videospeedEnabled;
   spotifyPlaybackEnabled.checked = settings.spotifyPlaybackEnabled;
+  mangadexTranslateEnabled.checked = settings.mangadexTranslateEnabled;
+  mangadexTargetLanguage.value = settings.mangadexTargetLanguage;
+  mangadexPromptContext.value = settings.mangadexPromptContext;
   curiusEnabled.checked = settings.curiusEnabled;
   function syncCuriusToolbar() {
     if (!curiusEnabled.checked) {
@@ -355,6 +364,25 @@ async function init() {
   spotifyPlaybackEnabled.addEventListener("change", async () => {
     await chrome.storage.local.set({ spotifyPlaybackEnabled: spotifyPlaybackEnabled.checked });
     await reloadActiveTab();
+  });
+
+  mangadexTranslateEnabled.addEventListener("change", async () => {
+    await chrome.storage.local.set({
+      mangadexTranslateEnabled: mangadexTranslateEnabled.checked,
+    });
+    await reloadActiveTab();
+  });
+
+  mangadexTargetLanguage.addEventListener("change", async () => {
+    await chrome.storage.local.set({
+      mangadexTargetLanguage: mangadexTargetLanguage.value.trim() || "English",
+    });
+  });
+
+  mangadexPromptContext.addEventListener("change", async () => {
+    await chrome.storage.local.set({
+      mangadexPromptContext: mangadexPromptContext.value.trim(),
+    });
   });
 
   curiusEnabled.addEventListener("change", async () => {
