@@ -16,6 +16,30 @@ html[data-calm-youtube-enabled="true"] ytd-rich-grid-row:has(a[href^="/shorts"])
   display: none !important;
 }
 
+html[data-calm-youtube-enabled="true"] ytd-thumbnail img,
+html[data-calm-youtube-enabled="true"] ytd-playlist-thumbnail img,
+html[data-calm-youtube-enabled="true"] yt-img-shadow img[src*="ytimg.com"],
+html[data-calm-youtube-enabled="true"] yt-thumbnail-view-model img,
+html[data-calm-youtube-enabled="true"] .ytThumbnailViewModelImage img,
+html[data-calm-youtube-enabled="true"] .ytLockupViewModelContentImage img,
+html[data-calm-youtube-enabled="true"] a[href^="/watch"] img.ytCoreImageHost,
+html[data-calm-youtube-enabled="true"] a[href^="/shorts"] img.ytCoreImageHost {
+  filter: grayscale(0.82) saturate(0.45) !important;
+}
+
+html[data-calm-youtube-enabled="true"] #frosted-glass {
+  height: 56px !important;
+  background: linear-gradient(
+    to bottom,
+    var(--yt-spec-base-background, #fff) 0%,
+    color-mix(in srgb, var(--yt-spec-base-background, #fff) 78%, transparent) 55%,
+    transparent 100%
+  ) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  pointer-events: none !important;
+}
+
 html[data-calm-youtube-enabled="true"] ytd-display-ad-renderer,
 html[data-calm-youtube-enabled="true"] ytd-ad-slot-renderer,
 html[data-calm-youtube-enabled="true"] ytd-promoted-video-renderer,
