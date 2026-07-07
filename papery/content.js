@@ -853,21 +853,26 @@
     pendingRange = null;
   }
 
-  // --- note pen: floats beside a highlight while hovering it ---
+  // --- hover tools: pen + delete float beside a highlight while hovering ---
 
   const SVG_PEN = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>`;
+  const SVG_X = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`;
 
-  let penEl = null;
+  let penEl = null; // the tools cluster (note pen + delete)
+  let penNoteBtn = null;
   let penFor = null;
   let penHideTimer = 0;
 
   function ensurePen() {
     if (penEl) return;
-    penEl = document.createElement("button");
-    penEl.type = "button";
-    penEl.className = "calm-papery-hl-pen";
-    penEl.innerHTML = SVG_PEN;
-    penEl.addEventListener("mousedown", (e) => {
+    penEl = document.createElement("div");
+    penEl.className = "calm-papery-hl-tools";
+
+    penNoteBtn = document.createElement("button");
+    penNoteBtn.type = "button";
+    penNoteBtn.className = "calm-papery-hl-pen";
+    penNoteBtn.innerHTML = SVG_PEN;
+    penNoteBtn.addEventListener("mousedown", (e) => {
       e.preventDefault();
       e.stopPropagation();
       suppressNextMouseUp = true;
@@ -881,6 +886,25 @@
         showHlToolbar(mark.getBoundingClientRect(), { action: "note", id });
       }
     });
+
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "calm-papery-hl-pen calm-papery-hl-del";
+    delBtn.innerHTML = SVG_X;
+    delBtn.title = "remove highlight";
+    delBtn.setAttribute("aria-label", delBtn.title);
+    delBtn.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      suppressNextMouseUp = true;
+      if (penFor == null) return;
+      const id = Number(penFor);
+      hidePen();
+      void removeHighlight(id);
+    });
+
+    penEl.appendChild(penNoteBtn);
+    penEl.appendChild(delBtn);
     document.documentElement.appendChild(penEl);
   }
 
@@ -890,17 +914,17 @@
     penHideTimer = 0;
     penFor = mark.dataset.phlId;
     const r = mark.getBoundingClientRect();
-    penEl.style.left = Math.min(r.right + 6, window.innerWidth - 30) + "px";
+    penEl.style.left = Math.min(r.right + 6, window.innerWidth - 60) + "px";
     penEl.style.top = Math.max(4, r.top + r.height / 2 - 11) + "px";
     const noted = !!hlComments[penFor];
-    penEl.classList.toggle("calm-papery-hl-pen--noted", noted);
-    penEl.title = noted ? "edit note" : "add note";
-    penEl.setAttribute("aria-label", penEl.title);
-    penEl.classList.add("calm-papery-hl-pen--show");
+    penNoteBtn.classList.toggle("calm-papery-hl-pen--noted", noted);
+    penNoteBtn.title = noted ? "edit note" : "add note";
+    penNoteBtn.setAttribute("aria-label", penNoteBtn.title);
+    penEl.classList.add("calm-papery-hl-tools--show");
   }
 
   function hidePen() {
-    if (penEl) penEl.classList.remove("calm-papery-hl-pen--show");
+    if (penEl) penEl.classList.remove("calm-papery-hl-tools--show");
     penFor = null;
   }
 
@@ -918,7 +942,7 @@
         showPen(mark);
         return;
       }
-      if (t.closest(".calm-papery-hl-pen")) {
+      if (t.closest(".calm-papery-hl-tools")) {
         window.clearTimeout(penHideTimer);
         penHideTimer = 0;
         return;
@@ -942,9 +966,7 @@
       e.preventDefault();
       e.stopPropagation();
       suppressNextMouseUp = true;
-      if (hlToolbarMode && hlToolbarMode.action === "remove")
-        void removeHighlight(hlToolbarMode.id);
-      else if (hlToolbarMode && hlToolbarMode.action === "note")
+      if (hlToolbarMode && hlToolbarMode.action === "note")
         void saveNoteFromToolbar(hlToolbarMode.id);
     });
     document.documentElement.appendChild(hlToolbar);
@@ -955,22 +977,15 @@
     hlToolbarMode = mode;
     const btn = hlToolbar.querySelector("button");
     const note = hlToolbar.querySelector(".calm-papery-hl-note");
-    if (mode.action === "remove") {
-      btn.textContent = "remove highlight";
-      note.hidden = true;
-    } else {
-      btn.textContent = "save note";
-      note.hidden = false;
-      note.value = hlComments[mode.id] || "";
-    }
+    btn.textContent = "save note";
+    note.hidden = false;
+    note.value = hlComments[mode.id] || "";
     hlToolbar.style.left =
       Math.max(8, Math.min(rect.left, window.innerWidth - 280)) + "px";
     hlToolbar.style.top = Math.min(rect.bottom + 6, window.innerHeight - 120) + "px";
     hlToolbar.classList.add("calm-papery-hl-toolbar--show");
-    if (mode.action === "note") {
-      note.focus();
-      note.setSelectionRange(note.value.length, note.value.length);
-    }
+    note.focus();
+    note.setSelectionRange(note.value.length, note.value.length);
   }
 
   function hideHlToolbar() {
@@ -1055,11 +1070,9 @@
     const sel = window.getSelection();
     const collapsed = !sel || sel.isCollapsed || !String(sel).trim();
     if (mark && collapsed) {
+      // Delete/note live on the hover tools beside the highlight — a plain
+      // click on a mark shouldn't pop anything.
       hideMarker();
-      showHlToolbar(mark.getBoundingClientRect(), {
-        action: "remove",
-        id: Number(mark.dataset.phlId),
-      });
       return;
     }
     if (collapsed || String(sel).trim().length < 2 || sel.rangeCount === 0) {

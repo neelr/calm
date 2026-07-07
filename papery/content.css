@@ -407,14 +407,23 @@ mark.calm-papery-hl.calm-papery-hl--pulse {
   outline: none;
 }
 
-/* Note pen: appears beside a highlight only while hovering it */
-.calm-papery-hl-pen {
+/* Hover tools: pen + delete appear beside a highlight while hovering it */
+.calm-papery-hl-tools {
   position: fixed;
   z-index: 2147483645;
+  display: none;
+  gap: 4px;
+}
+
+.calm-papery-hl-tools--show {
+  display: inline-flex;
+}
+
+.calm-papery-hl-pen {
   width: 22px;
   height: 22px;
   padding: 0;
-  display: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
@@ -428,8 +437,8 @@ mark.calm-papery-hl.calm-papery-hl--pulse {
     color 0.1s ease;
 }
 
-.calm-papery-hl-pen--show {
-  display: inline-flex;
+.calm-papery-hl-del:hover {
+  color: #a30f0f !important;
 }
 
 .calm-papery-hl-pen:hover {
