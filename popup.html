@@ -27,6 +27,39 @@
       <button type="button" id="curiusOpenSite">Open curius.app</button>
     </div>
   </div>
+  <div id="paperyTokenModal" class="papery-modal" hidden>
+    <p class="papery-modal-title">Connect Papery</p>
+    <p class="papery-modal-hint">
+      Enter your Papery site URL and access token. The token is the
+      <strong>AUTH_TOKEN</strong> you set on the Papery server.
+    </p>
+    <label class="papery-modal-field">
+      <span>Endpoint</span>
+      <input
+        id="paperyEndpointInput"
+        type="url"
+        spellcheck="false"
+        autocomplete="off"
+        placeholder="endpoint url"
+      >
+    </label>
+    <label class="papery-modal-field">
+      <span>Token</span>
+      <input
+        id="paperyTokenInput"
+        type="password"
+        spellcheck="false"
+        autocomplete="off"
+        placeholder="access token"
+      >
+    </label>
+    <div class="papery-modal-actions">
+      <button type="button" id="paperyTokenApply" class="papery-modal-primary">
+        Connect
+      </button>
+      <button type="button" id="paperyTokenCancel">Cancel</button>
+    </div>
+  </div>
   <main class="popup">
     <div class="popup-header">
       <h1>Calm Feed</h1>
@@ -76,6 +109,20 @@
         </button>
         <button type="button" id="curiusSaveToggle" class="curius-icon-btn curius-icon-btn--save" title="Save this tab to Curius" aria-label="Save page to Curius">
           <svg class="curius-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="papery-line">
+      <label class="toggle">
+        <input id="paperyEnabled" type="checkbox">
+        <span>Papery</span>
+      </label>
+      <div class="papery-toolbar" role="toolbar" aria-label="Papery">
+        <button type="button" id="paperyAuth" class="papery-icon-btn papery-icon-btn--auth" aria-label="Connect Papery" title="Connect Papery">
+          <svg class="papery-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 7L9.41 8.59 11 10.17H1v2h10.17l-1.59 1.59L11 15l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>
+        </button>
+        <button type="button" id="paperySaveToggle" class="papery-icon-btn papery-icon-btn--save" title="Save this tab to Papery" aria-label="Save page to Papery">
+          <svg class="papery-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
         </button>
       </div>
     </div>

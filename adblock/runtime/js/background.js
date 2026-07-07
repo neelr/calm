@@ -22,6 +22,7 @@
 import * as scrmgr from './scripting-manager.js';
 
 import '../../../curius/calm-bridge.js';
+import '../../../papery/papery-bridge.js';
 import '../../../mangadex/background.js';
 
 import {
@@ -226,6 +227,7 @@ function setDeveloperMode(state) {
 function onMessage(request, sender, callback) {
 
     if ( request?.scope === 'curius' ) { return true; }
+    if ( request?.scope === 'papery' ) { return true; }
     if ( request?.scope === 'calm-mangadex' ) { return true; }
 
     if ( request?.scope === 'calm-spotifyplayback' ) {

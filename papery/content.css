@@ -1,0 +1,455 @@
+/* Papery UI: same tactile "clicky" language as the Curius dock, pared down to a
+   single save/unsave button pinned bottom-right. */
+:root {
+  --calm-papery-font: Georgia, "Times New Roman", Times, serif;
+  --calm-papery-raise:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 2px 4px rgba(0, 0, 0, 0.12),
+    0 3px 8px rgba(0, 0, 0, 0.08);
+  --calm-papery-raise-hover:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 3px 6px rgba(0, 0, 0, 0.14),
+    0 6px 14px rgba(0, 0, 0, 0.1);
+  --calm-papery-press:
+    inset 0 2px 4px rgba(0, 0, 0, 0.18),
+    inset 0 1px 2px rgba(0, 0, 0, 0.08),
+    0 1px 1px rgba(0, 0, 0, 0.06);
+}
+
+#calm-papery-dock {
+  position: fixed;
+  z-index: 2147483645;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  font: 12px/1.35 var(--calm-papery-font);
+  pointer-events: none;
+}
+
+#calm-papery-dock > * {
+  pointer-events: auto;
+}
+
+#calm-papery-dock {
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease;
+}
+
+#calm-papery-dock.calm-papery-dock--tucked {
+  transform: translateX(calc(100% + 24px));
+  opacity: 0;
+}
+
+#calm-papery-dock.calm-papery-dock--tucked > * {
+  pointer-events: none;
+}
+
+/* Slim grey pull-tab at the screen edge while the dock is tucked */
+.calm-papery-dock-tab {
+  position: fixed;
+  z-index: 2147483644;
+  right: 0;
+  bottom: 22px;
+  width: 6px;
+  height: 48px;
+  border-radius: 4px 0 0 4px;
+  background: rgba(128, 128, 128, 0.32);
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    background 0.15s ease,
+    width 0.15s ease;
+}
+
+.calm-papery-dock-tab:hover {
+  background: rgba(128, 128, 128, 0.55);
+  width: 9px;
+}
+
+.calm-papery-dock-tab--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.calm-papery-btn {
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: linear-gradient(180deg, #fff 0%, #f0f0f0 100%);
+  color: #333;
+  box-shadow: var(--calm-papery-raise);
+  cursor: pointer;
+  transition:
+    box-shadow 0.1s ease,
+    transform 0.1s ease,
+    background 0.1s ease,
+    color 0.1s ease;
+}
+
+.calm-papery-btn:hover {
+  background: linear-gradient(180deg, #fff 0%, #f5f5f5 100%);
+  box-shadow: var(--calm-papery-raise-hover);
+}
+
+.calm-papery-btn:active {
+  transform: translateY(1px);
+  box-shadow: var(--calm-papery-press);
+}
+
+.calm-papery-btn:focus,
+.calm-papery-btn:focus-visible {
+  outline: none;
+}
+
+.calm-papery-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.calm-papery-btn svg {
+  display: block;
+  pointer-events: none;
+}
+
+.calm-papery-btn--saved {
+  border-color: rgba(46, 160, 67, 0.5);
+  background: linear-gradient(
+    180deg,
+    rgba(46, 160, 67, 0.16) 0%,
+    rgba(46, 160, 67, 0.1) 100%
+  );
+  color: #1a7f37;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 2px 4px rgba(46, 160, 67, 0.14),
+    0 3px 8px rgba(0, 0, 0, 0.06);
+}
+
+.calm-papery-btn--saved:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(46, 160, 67, 0.22) 0%,
+    rgba(46, 160, 67, 0.14) 100%
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.4) inset,
+    0 3px 6px rgba(46, 160, 67, 0.2),
+    0 5px 12px rgba(0, 0, 0, 0.08);
+}
+
+.calm-papery-toast {
+  max-width: 220px;
+  padding: 7px 10px;
+  font: 11px/1.35 var(--calm-papery-font);
+  color: #222;
+  background: linear-gradient(180deg, #fff 0%, #fafafa 100%);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  box-shadow: var(--calm-papery-raise-hover);
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.calm-papery-toast--show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.calm-papery-toast[hidden] {
+  display: none;
+}
+
+/* Heart: sits above the save button in the dock */
+.calm-papery-btn--fav {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  align-self: flex-end;
+}
+
+.calm-papery-btn--fav[hidden] {
+  display: none;
+}
+
+.calm-papery-btn--fav:hover {
+  color: #e0245e;
+}
+
+.calm-papery-btn--fav-on {
+  border-color: rgba(224, 36, 94, 0.45);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 173, 200, 0.4) 0%,
+    rgba(224, 36, 94, 0.16) 100%
+  );
+  color: #e0245e;
+}
+
+.calm-papery-btn--fav-on:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 173, 200, 0.55) 0%,
+    rgba(224, 36, 94, 0.24) 100%
+  );
+  color: #e0245e;
+}
+
+/* Highlight cycler: sits above the save button in the dock */
+.calm-papery-btn--cycle {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  align-self: flex-end;
+  border-color: rgba(214, 166, 0, 0.5);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 232, 120, 0.55) 0%,
+    rgba(255, 212, 0, 0.28) 100%
+  );
+  color: #8a6d00;
+}
+
+.calm-papery-btn--cycle:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 232, 120, 0.7) 0%,
+    rgba(255, 212, 0, 0.4) 100%
+  );
+}
+
+.calm-papery-btn--cycle[hidden] {
+  display: none;
+}
+
+.calm-papery-cycle-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 7px;
+  font: 600 9px/14px system-ui, -apple-system, sans-serif;
+  text-align: center;
+  color: #fff;
+  background: rgba(138, 109, 0, 0.9);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+/* Text highlights */
+mark.calm-papery-hl {
+  background: rgba(255, 212, 0, 0.35);
+  color: inherit;
+  border-bottom: 2px solid rgba(214, 166, 0, 0.75);
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+mark.calm-papery-hl:hover {
+  background: rgba(255, 212, 0, 0.5);
+}
+
+/* Has a note attached — dashed underline hints there's more to see */
+mark.calm-papery-hl--commented {
+  border-bottom-style: dashed;
+}
+
+@keyframes calm-papery-hl-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(214, 166, 0, 0);
+    filter: brightness(1);
+  }
+  35% {
+    box-shadow: 0 0 0 4px rgba(214, 166, 0, 0.45), 0 0 16px rgba(214, 166, 0, 0.3);
+    filter: brightness(1.12);
+  }
+}
+
+mark.calm-papery-hl.calm-papery-hl--pulse {
+  animation: calm-papery-hl-pulse 0.9s ease-out 1;
+  position: relative;
+  z-index: 2147483630;
+}
+
+#calm-papery-hl-toolbar {
+  position: fixed;
+  z-index: 2147483646;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  min-width: 190px;
+  max-width: min(300px, 90vw);
+  border-radius: 9px;
+  font: 12px/1.35 var(--calm-papery-font);
+  background: linear-gradient(180deg, #fff 0%, #f5f5f5 100%);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  box-shadow: var(--calm-papery-raise-hover);
+}
+
+#calm-papery-hl-toolbar.calm-papery-hl-toolbar--show {
+  display: flex;
+}
+
+.calm-papery-hl-note {
+  font: 12px var(--calm-papery-font);
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+  background: #fff;
+  color: #1a1a1a;
+  cursor: text;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 34px;
+  max-height: 110px;
+}
+
+.calm-papery-hl-note[hidden] {
+  display: none;
+}
+
+/* Highlight marker: floats at the end of a text selection; one click marks */
+.calm-papery-hl-marker {
+  position: fixed;
+  z-index: 2147483646;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  border: 1px solid rgba(214, 166, 0, 0.5);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 232, 120, 0.9) 0%,
+    rgba(255, 212, 0, 0.55) 100%
+  );
+  color: #6b5500;
+  box-shadow: var(--calm-papery-raise);
+  cursor: pointer;
+  transition:
+    box-shadow 0.1s ease,
+    transform 0.1s ease;
+}
+
+.calm-papery-hl-marker--show {
+  display: inline-flex;
+}
+
+.calm-papery-hl-marker:hover {
+  box-shadow: var(--calm-papery-raise-hover);
+  transform: translateY(-1px);
+}
+
+.calm-papery-hl-marker:active {
+  transform: translateY(1px);
+  box-shadow: var(--calm-papery-press);
+}
+
+.calm-papery-hl-marker:focus,
+.calm-papery-hl-marker:focus-visible {
+  outline: none;
+}
+
+/* Note pen: appears beside a highlight only while hovering it */
+.calm-papery-hl-pen {
+  position: fixed;
+  z-index: 2147483645;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: linear-gradient(180deg, #fff 0%, #f0f0f0 100%);
+  color: #8a8a8a;
+  box-shadow: var(--calm-papery-raise);
+  cursor: pointer;
+  transition:
+    box-shadow 0.1s ease,
+    color 0.1s ease;
+}
+
+.calm-papery-hl-pen--show {
+  display: inline-flex;
+}
+
+.calm-papery-hl-pen:hover {
+  color: #555;
+  box-shadow: var(--calm-papery-raise-hover);
+}
+
+.calm-papery-hl-pen:active {
+  transform: translateY(1px);
+  box-shadow: var(--calm-papery-press);
+}
+
+.calm-papery-hl-pen:focus,
+.calm-papery-hl-pen:focus-visible {
+  outline: none;
+}
+
+/* Highlight already has a note — amber pen */
+.calm-papery-hl-pen--noted {
+  color: #8a6d00;
+  border-color: rgba(214, 166, 0, 0.5);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 232, 120, 0.55) 0%,
+    rgba(255, 212, 0, 0.28) 100%
+  );
+}
+
+.calm-papery-hl-pen--noted:hover {
+  color: #6b5500;
+}
+
+.calm-papery-hl-btn {
+  font: 12px var(--calm-papery-font);
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: linear-gradient(180deg, #fff 0%, #f0f0f0 100%);
+  color: #333;
+  box-shadow: var(--calm-papery-raise);
+  cursor: pointer;
+  align-self: flex-start;
+  transition:
+    box-shadow 0.1s ease,
+    transform 0.1s ease;
+}
+
+.calm-papery-hl-btn:hover {
+  box-shadow: var(--calm-papery-raise-hover);
+}
+
+.calm-papery-hl-btn:active {
+  transform: translateY(1px);
+  box-shadow: var(--calm-papery-press);
+}
+
+.calm-papery-hl-btn:focus,
+.calm-papery-hl-btn:focus-visible {
+  outline: none;
+}

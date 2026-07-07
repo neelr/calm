@@ -10,3 +10,6 @@ mangadex/nippon-sangoku-context.html
 
 _locales/
 locales/
+
+# Local Papery instance URL (host stays out of the repo; never commit)
+papery/local-config.json

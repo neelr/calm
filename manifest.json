@@ -7,6 +7,9 @@
     "service_worker": "adblock/runtime/js/background.js",
     "type": "module"
   },
+  "chrome_url_overrides": {
+    "newtab": "papery/newtab.html"
+  },
   "commands": {
     "enter-zapper-mode": {
       "description": "__MSG_zapperTipEnter__"
@@ -502,6 +505,26 @@
       ],
       "css": [
         "curius/content.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "exclude_matches": [
+        "http://localhost/*",
+        "https://localhost/*",
+        "https://www.messenger.com/*",
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://calendar.google.com/*"
+      ],
+      "js": [
+        "papery/content.js"
+      ],
+      "css": [
+        "papery/content.css"
       ],
       "run_at": "document_idle"
     },

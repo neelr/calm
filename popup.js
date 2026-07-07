@@ -20,7 +20,10 @@ async function getSettings() {
     mangadexTranslateEnabled: false,
     mangadexTargetLanguage: "English",
     mangadexPromptContext: "",
-    curiusEnabled: false
+    curiusEnabled: false,
+    paperyEnabled: false,
+    paperyEndpoint: "",
+    paperyToken: ""
   });
 
   settings.adblockEnabled = await isAdblockEnabled();
@@ -230,6 +233,165 @@ async function reloadActiveTab() {
   }
 }
 
+// --- Papery ---------------------------------------------------------------
+// Bearer-token reading list. No cookies/CSRF, so (unlike Curius) there's no
+// background bridge — the popup talks to the endpoint directly and the content
+// script handles per-page saves.
+
+const PAPERY_SVG_BOOKMARK = `<svg class="papery-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>`;
+
+const PAPERY_SVG_TRASH = `<svg class="papery-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
+
+const PAPERY_SVG_AUTH_LOGIN = `<svg class="papery-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 7L9.41 8.59 11 10.17H1v2h10.17l-1.59 1.59L11 15l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z"/></svg>`;
+
+const PAPERY_SVG_AUTH_LOGOUT = `<svg class="papery-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>`;
+
+// The instance URL lives in gitignored papery/local-config.json (same pattern
+// as mangadex/local-config.json) so the host never enters the repo.
+let paperyDefaultEndpoint = "";
+
+async function loadPaperyDefaultEndpoint() {
+  try {
+    const res = await fetch(chrome.runtime.getURL("papery/local-config.json"));
+    const j = await res.json();
+    paperyDefaultEndpoint = normalizePaperyEndpoint(j.endpoint || "");
+  } catch {
+    paperyDefaultEndpoint = "";
+  }
+}
+
+function normalizePaperyEndpoint(raw) {
+  let s = String(raw || "")
+    .trim()
+    .replace(/\/+$/, "");
+  if (s && !/^https?:\/\//i.test(s)) {
+    s = `https://${s}`;
+  }
+  return s;
+}
+
+async function getPaperyConfig() {
+  const s = await chrome.storage.local.get({
+    paperyEndpoint: "",
+    paperyToken: "",
+  });
+  return {
+    endpoint: normalizePaperyEndpoint(s.paperyEndpoint),
+    token: String(s.paperyToken || "").trim(),
+  };
+}
+
+async function paperyIsConnected() {
+  const { endpoint, token } = await getPaperyConfig();
+  return !!(endpoint && token);
+}
+
+// Validate an endpoint + token via the bridge (which hits /api/status).
+async function validatePapery(endpoint, token) {
+  const base = normalizePaperyEndpoint(endpoint);
+  let res;
+  try {
+    res = await chrome.runtime.sendMessage({
+      scope: "papery",
+      type: "validate",
+      endpoint: base,
+      token: token.trim(),
+    });
+  } catch (e) {
+    return { ok: false, error: String((e && e.message) || e) };
+  }
+  if (res?.ok) {
+    return { ok: true };
+  }
+  switch (res?.error) {
+    case "missing_fields":
+      return { ok: false, error: "Enter both an endpoint and a token." };
+    case "unauthorized":
+      return { ok: false, error: "Token rejected (401)." };
+    case "unreachable":
+      return { ok: false, error: `Could not reach ${base}` };
+    default:
+      if (typeof res?.error === "string" && res.error.startsWith("http_")) {
+        return { ok: false, error: `Endpoint returned ${res.error.slice(5)}.` };
+      }
+      return { ok: false, error: res?.error || "Could not connect." };
+  }
+}
+
+function setPaperySaveToggleMode(saved) {
+  const btn = document.getElementById("paperySaveToggle");
+  if (!btn) {
+    return;
+  }
+  btn.dataset.mode = saved ? "unsave" : "save";
+  if (saved) {
+    btn.classList.remove("papery-icon-btn--save");
+    btn.classList.add("papery-icon-btn--unsave");
+    btn.innerHTML = PAPERY_SVG_TRASH;
+    btn.title = "Remove this page from Papery";
+    btn.setAttribute("aria-label", btn.title);
+  } else {
+    btn.classList.remove("papery-icon-btn--unsave");
+    btn.classList.add("papery-icon-btn--save");
+    btn.innerHTML = PAPERY_SVG_BOOKMARK;
+    btn.title = "Save this tab to Papery";
+    btn.setAttribute("aria-label", btn.title);
+  }
+}
+
+async function refreshPaperySaveToggleUi() {
+  const btn = document.getElementById("paperySaveToggle");
+  const enabledEl = document.getElementById("paperyEnabled");
+  if (!btn || !enabledEl?.checked) {
+    if (btn) {
+      btn.disabled = true;
+    }
+    return;
+  }
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) {
+    btn.disabled = true;
+    return;
+  }
+  try {
+    const res = await chrome.tabs.sendMessage(tab.id, {
+      scope: "papery",
+      type: "getPaperySaveState",
+    });
+    if (res?.ok) {
+      setPaperySaveToggleMode(!!res.saved);
+      btn.disabled = false;
+    } else {
+      setPaperySaveToggleMode(false);
+      btn.disabled = true;
+    }
+  } catch {
+    btn.disabled = true;
+  }
+}
+
+async function refreshPaperyAccountUi() {
+  const authBtn = document.getElementById("paperyAuth");
+  if (!authBtn) {
+    return;
+  }
+  if (await paperyIsConnected()) {
+    authBtn.innerHTML = PAPERY_SVG_AUTH_LOGOUT;
+    authBtn.setAttribute("aria-label", "Disconnect Papery");
+    authBtn.title = "Disconnect Papery";
+    authBtn.dataset.mode = "logout";
+  } else {
+    authBtn.innerHTML = PAPERY_SVG_AUTH_LOGIN;
+    authBtn.setAttribute("aria-label", "Connect Papery");
+    authBtn.title = "Connect Papery";
+    authBtn.dataset.mode = "login";
+  }
+}
+
+async function disconnectPapery() {
+  await chrome.storage.local.set({ paperyEndpoint: "", paperyToken: "" });
+}
+
 async function init() {
   const settings = await getSettings();
   const youtubeEnabled = document.getElementById("youtubeEnabled");
@@ -434,6 +596,145 @@ async function init() {
   if (curiusSaveToggle) {
     curiusSaveToggle.addEventListener("click", () => {
       void runCuriusSaveToggle();
+    });
+  }
+
+  // --- Papery wiring ---
+  await loadPaperyDefaultEndpoint();
+  const paperyEnabled = document.getElementById("paperyEnabled");
+  const paperyAuth = document.getElementById("paperyAuth");
+  const paperyTokenModal = document.getElementById("paperyTokenModal");
+  const paperyEndpointInput = document.getElementById("paperyEndpointInput");
+  const paperyTokenInput = document.getElementById("paperyTokenInput");
+  const paperyTokenApply = document.getElementById("paperyTokenApply");
+  const paperyTokenCancel = document.getElementById("paperyTokenCancel");
+
+  paperyEnabled.checked = settings.paperyEnabled;
+
+  function syncPaperyToolbar() {
+    if (!paperyEnabled.checked) {
+      const t = document.getElementById("paperySaveToggle");
+      if (t) {
+        t.disabled = true;
+      }
+      return;
+    }
+    void refreshPaperySaveToggleUi();
+  }
+  syncPaperyToolbar();
+
+  await refreshPaperyAccountUi();
+
+  function showPaperyTokenModal() {
+    paperyEndpointInput.value = settings.paperyEndpoint || paperyDefaultEndpoint;
+    paperyTokenInput.value = "";
+    paperyTokenModal.removeAttribute("hidden");
+    (paperyEndpointInput.value ? paperyTokenInput : paperyEndpointInput).focus();
+  }
+
+  function hidePaperyTokenModal() {
+    paperyTokenModal.setAttribute("hidden", "");
+  }
+
+  if (paperyAuth) {
+    paperyAuth.addEventListener("click", async () => {
+      if (paperyAuth.dataset.mode === "logout") {
+        await disconnectPapery();
+        settings.paperyEndpoint = "";
+        settings.paperyToken = "";
+        await refreshPaperyAccountUi();
+        syncPaperyToolbar();
+        return;
+      }
+      showPaperyTokenModal();
+    });
+  }
+
+  paperyTokenCancel.addEventListener("click", () => {
+    hidePaperyTokenModal();
+  });
+
+  paperyTokenApply.addEventListener("click", async () => {
+    const endpoint =
+      normalizePaperyEndpoint(paperyEndpointInput.value) ||
+      paperyDefaultEndpoint;
+    const token = paperyTokenInput.value.trim();
+    paperyTokenApply.disabled = true;
+    try {
+      const check = await validatePapery(endpoint, token);
+      if (!check.ok) {
+        window.alert(`Could not connect: ${check.error}`);
+        return;
+      }
+      await chrome.storage.local.set({
+        paperyEndpoint: endpoint,
+        paperyToken: token,
+      });
+      settings.paperyEndpoint = endpoint;
+      settings.paperyToken = token;
+      hidePaperyTokenModal();
+      paperyTokenInput.value = "";
+      await refreshPaperyAccountUi();
+      syncPaperyToolbar();
+    } finally {
+      paperyTokenApply.disabled = false;
+    }
+  });
+
+  paperyEnabled.addEventListener("change", async () => {
+    await chrome.storage.local.set({ paperyEnabled: paperyEnabled.checked });
+    syncPaperyToolbar();
+  });
+
+  async function runPaperySaveToggle() {
+    if (!paperyEnabled.checked) {
+      window.alert("Turn on Papery first.");
+      return;
+    }
+    if (!(await paperyIsConnected())) {
+      window.alert("Connect Papery first with the → button.");
+      return;
+    }
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+    if (!tab?.id) {
+      return;
+    }
+    const btn = document.getElementById("paperySaveToggle");
+    if (btn) {
+      btn.disabled = true;
+    }
+    try {
+      const res = await chrome.tabs.sendMessage(tab.id, {
+        scope: "papery",
+        type: "togglePaperySaveFromPopup",
+      });
+      if (res?.ok === false) {
+        if (res.error === "disabled") {
+          window.alert("Turn on Papery first.");
+        } else if (res.error === "unconfigured") {
+          window.alert("Connect Papery first with the → button.");
+        } else if (res.error === "unauthorized") {
+          window.alert("Papery token was rejected. Reconnect with a valid token.");
+        } else {
+          window.alert(res.error || "Request failed.");
+        }
+      }
+    } catch {
+      window.alert(
+        "Could not reach this tab. Open a normal web page with Papery enabled, or refresh the page."
+      );
+    } finally {
+      await refreshPaperySaveToggleUi();
+    }
+  }
+
+  const paperySaveToggle = document.getElementById("paperySaveToggle");
+  if (paperySaveToggle) {
+    paperySaveToggle.addEventListener("click", () => {
+      void runPaperySaveToggle();
     });
   }
 }

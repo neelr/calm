@@ -33,6 +33,7 @@ find "$ROOT_DIR" -maxdepth 1 \
 
 jq '
   .action.default_popup = "popup.html" |
+  .chrome_url_overrides = { "newtab": "papery/newtab.html" } |
   del(.action.default_icon) |
   .background.service_worker = "adblock/runtime/js/background.js" |
   .declarative_net_request.rule_resources |= map(
@@ -111,6 +112,20 @@ jq '
       "run_at": "document_idle"
     },
     {
+      "matches": ["<all_urls>"],
+      "exclude_matches": [
+        "http://localhost/*",
+        "https://localhost/*",
+        "https://www.messenger.com/*",
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://calendar.google.com/*"
+      ],
+      "js": ["papery/content.js"],
+      "css": ["papery/content.css"],
+      "run_at": "document_idle"
+    },
+    {
       "matches": [
         "https://curius.app/*",
         "https://www.curius.app/*"
@@ -135,6 +150,15 @@ if ! grep -q "curius/calm-bridge.js" "$BG_JS"; then
 fi
 if ! grep -q "request?.scope === 'curius'" "$BG_JS"; then
   perl -0pi -e "s|(function onMessage\\(request, sender, callback\\) \\{\\n)(\\n    const tabId)|\$1\\n    if ( request?.scope === 'curius' ) { return true; }\\n\$2|" "$BG_JS"
+fi
+
+# Calm Feed — Papery: load bridge in the service worker and let its async
+# handler own 'papery'-scoped replies (chained onto the curius lines above).
+if ! grep -q "papery/papery-bridge.js" "$BG_JS"; then
+  perl -0pi -e "s|(import '\\.\\./\\.\\./\\.\\./curius/calm-bridge\\.js';\\n)|\$1import '../../../papery/papery-bridge.js';\\n|" "$BG_JS"
+fi
+if ! grep -q "request?.scope === 'papery'" "$BG_JS"; then
+  perl -0pi -e "s|(    if \\( request\\?\\.scope === 'curius' \\) \\{ return true; \\}\\n)|\$1    if ( request?.scope === 'papery' ) { return true; }\\n|" "$BG_JS"
 fi
 
 for ruleset in \
