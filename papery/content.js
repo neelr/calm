@@ -634,21 +634,123 @@
       unmarkCommented(id);
       toast("Note removed");
     }
+    layoutMarginNotes();
   }
 
   async function loadHighlights() {
     const res = await sendPapery("highlights.list", { url: pageUrl() });
     if (!res.ok || !Array.isArray(res.highlights)) return;
-    for (const h of res.highlights) {
-      try {
-        if (anchorHighlight(h) && h.comment) {
-          hlComments[h.id] = h.comment;
-          markCommented(h.id);
-        }
-      } catch {}
+    const all = res.highlights;
+    for (const h of all) {
+      if (h.comment) hlComments[h.id] = h.comment;
     }
-    refreshHlCycle();
+    const anchorTick = () => {
+      for (const h of all) {
+        // Re-anchor anything whose marks aren't in the DOM — covers both
+        // late-rendered content and hydration frameworks that replace nodes
+        // after we anchored.
+        if (
+          document.querySelector(
+            `mark.calm-papery-hl[data-phl-id="${h.id}"]`
+          )
+        ) {
+          continue;
+        }
+        try {
+          if (anchorHighlight(h) && h.comment) markCommented(h.id);
+        } catch {}
+      }
+      refreshHlCycle();
+      layoutMarginNotes();
+    };
+    anchorTick();
+    for (const delay of [1200, 3000, 7000]) {
+      await new Promise((r) => setTimeout(r, delay));
+      anchorTick();
+    }
   }
+
+  // --- margin notes: passive cards in the right margin for noted highlights -
+
+  const marginNotes = {}; // highlight id -> element
+
+  function ensureMarginNote(id) {
+    let el = marginNotes[id];
+    if (el) return el;
+    el = document.createElement("div");
+    el.className = "calm-papery-margin-note";
+    el.title = "Edit note";
+    el.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      suppressNextMouseUp = true;
+      const mark = document.querySelector(
+        `mark.calm-papery-hl[data-phl-id="${id}"]`
+      );
+      if (mark) {
+        showHlToolbar(mark.getBoundingClientRect(), {
+          action: "note",
+          id: Number(id),
+        });
+      }
+    });
+    document.body.appendChild(el);
+    marginNotes[id] = el;
+    return el;
+  }
+
+  function removeMarginNote(id) {
+    const el = marginNotes[id];
+    if (el) {
+      el.remove();
+      delete marginNotes[id];
+    }
+  }
+
+  function removeAllMarginNotes() {
+    for (const id of Object.keys(marginNotes)) removeMarginNote(id);
+  }
+
+  /** Place each noted highlight's card in the right margin, aligned with its
+   *  first mark; stacked cards nudge downward instead of overlapping. */
+  function layoutMarginNotes() {
+    const entries = [];
+    for (const [id, text] of Object.entries(hlComments)) {
+      const mark = document.querySelector(
+        `mark.calm-papery-hl[data-phl-id="${id}"]`
+      );
+      if (!mark) {
+        removeMarginNote(id);
+        continue;
+      }
+      entries.push({
+        id,
+        text,
+        top: mark.getBoundingClientRect().top + window.scrollY,
+      });
+    }
+    entries.sort((a, b) => a.top - b.top);
+    const show = window.innerWidth >= 1000; // too cramped below this — pen still works
+    let lastBottom = 0;
+    for (const en of entries) {
+      const el = ensureMarginNote(en.id);
+      el.textContent = en.text;
+      if (!show) {
+        el.style.display = "none";
+        continue;
+      }
+      el.style.display = "";
+      const top = Math.max(en.top, lastBottom + 6);
+      el.style.top = top + "px";
+      lastBottom = top + el.offsetHeight;
+    }
+  }
+
+  let marginLayoutTimer = 0;
+  window.addEventListener("resize", () => {
+    window.clearTimeout(marginLayoutTimer);
+    marginLayoutTimer = window.setTimeout(layoutMarginNotes, 150);
+  });
 
   // --- highlight cycler (dock button: scroll through highlights in order) ---
 
@@ -918,6 +1020,7 @@
     if (res.ok) {
       unwrapHighlight(id);
       delete hlComments[id];
+      removeMarginNote(id);
       refreshHlCycle();
       toast("Highlight removed");
     } else {
@@ -1019,6 +1122,7 @@
       hideMarker();
       hidePen();
       removeAllHighlightMarks();
+      removeAllMarginNotes();
       highlightsLoaded = false;
     }
   }

@@ -269,6 +269,43 @@ mark.calm-papery-hl--commented {
   border-bottom-style: dashed;
 }
 
+/* Margin notes: quiet cards in the right margin, aligned with their
+   highlight; click to edit. Hidden on narrow viewports (pen still works). */
+.calm-papery-margin-note {
+  position: absolute;
+  right: 24px;
+  width: 200px;
+  max-width: 20vw;
+  box-sizing: border-box;
+  padding: 6px 9px 7px;
+  border-radius: 7px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-left: 3px solid rgba(214, 166, 0, 0.65);
+  background: linear-gradient(180deg, #fff 0%, #f6f6f4 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 2px 5px rgba(0, 0, 0, 0.06);
+  font: 12px/1.4 var(--calm-papery-font);
+  color: #1a1a1a;
+  text-transform: none;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  z-index: 2147483640;
+  cursor: pointer;
+  opacity: 0.85;
+  transition:
+    opacity 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.calm-papery-margin-note:hover {
+  opacity: 1;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
 @keyframes calm-papery-hl-pulse {
   0%, 100% {
     box-shadow: 0 0 0 0 rgba(214, 166, 0, 0);
